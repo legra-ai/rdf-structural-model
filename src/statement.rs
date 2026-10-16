@@ -13,10 +13,13 @@ use crate::{
 /// One RDF triple. Predicates are always IRIs; standard subjects cannot be
 /// literals or triple terms.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
+    )
+)]
 pub struct Triple<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     subject: Subject<Text, Extension>,
     predicate: Iri<Text>,
@@ -56,10 +59,13 @@ impl<Text: Bos<str> + AsRef<str>, Extension> Triple<Text, Extension> {
 
 /// A dataset graph position, including an explicit default graph.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
+    )
+)]
 pub enum GraphName<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     /// The unnamed default graph.
     Default,
@@ -73,10 +79,13 @@ pub enum GraphName<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension
 
 /// One quad; this does not allocate or hydrate a dataset.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
+    )
+)]
 pub struct Quad<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     triple: Triple<Text, Extension>,
     graph: GraphName<Text, Extension>,

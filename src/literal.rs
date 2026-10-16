@@ -18,7 +18,10 @@ pub const XSD_STRING: &str = "http://www.w3.org/2001/XMLSchema#string";
 
 /// Language and direction without imposing a storage representation.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(deserialize = "Text: serde::Deserialize<'de>"))]
+#[serde(
+    deny_unknown_fields,
+    bound(deserialize = "Text: serde::Deserialize<'de>")
+)]
 pub enum LiteralFacets<Text: AsRef<str> = String> {
     /// Neither language nor direction.
     None,
@@ -38,10 +41,13 @@ pub enum LiteralFacets<Text: AsRef<str> = String> {
 /// Extended literals may carry language facets independently of datatype.
 /// [`Literal::try_new`] separately enforces the standard RDF combinations.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>"
+    )
+)]
 pub struct LiteralMetadata<Text: Bos<str> + AsRef<str> = String> {
     datatype: Iri<Text>,
     facets: LiteralFacets<Text>,
@@ -217,6 +223,7 @@ impl LiteralMetadata<String> {
 #[derive(serde::Deserialize)]
 #[serde(
     rename = "Literal",
+    deny_unknown_fields,
     bound(deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>")
 )]
 struct LiteralInput<Text: Bos<str> + AsRef<str>> {

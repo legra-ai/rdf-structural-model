@@ -19,10 +19,13 @@ pub enum NoExtension {}
 
 /// An RDF term with owned or borrowed text and an explicit extension parameter.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
+    )
+)]
 pub enum Term<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     /// An absolute IRI.
     Iri(Iri<Text>),
@@ -57,10 +60,13 @@ impl<Text: Bos<str> + AsRef<str>, Extension> Term<Text, Extension> {
 
 /// A standard subject, or an explicitly selected subject extension.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
+    )
+)]
 pub enum Subject<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     /// An IRI subject.
     Iri(Iri<Text>),

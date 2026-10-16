@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 
 mod blank_node;
+mod borrowed;
 mod direction;
 mod error;
 mod language;

@@ -15,10 +15,13 @@ use crate::ModelError;
 /// Use distinct scopes when importing independent sources. This crate never
 /// creates scopes or allocates global identifiers.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(bound(
-    serialize = "Text: serde::Serialize",
-    deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>"
-))]
+#[serde(
+    deny_unknown_fields,
+    bound(
+        serialize = "Text: serde::Serialize",
+        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>"
+    )
+)]
 pub struct BlankNodeId<Text: Bos<str> + AsRef<str> = String> {
     scope: Iri<Text>,
     #[serde(deserialize_with = "BlankNodeId::deserialize_label")]
