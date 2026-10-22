@@ -1,6 +1,6 @@
 [package]
 name = "rdf-structural-model"
-version = "0.1.0"
+version = "0.2.0"
 description = "Owned and borrowed RDF 1.2 structural values with typed extensions and format-neutral Serde"
 authors = ["Jacobus Geluk <jacobus.geluk@dataroad.com>"]
 edition = "2024"
