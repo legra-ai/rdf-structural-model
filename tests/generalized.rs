@@ -155,3 +155,51 @@ fn generalized_nesting_and_literal_graph_names_round_trip_and_reject_standard_pr
     );
     assert_eq!(Quad::try_from(bad_graph), Err(ModelError::InvalidGraphName));
 }
+
+#[test]
+fn nested_object_conversion_recursively_checks_standard_positions() {
+    let standard: Term = Term::triple(Triple::new(
+        Subject::Iri(iri("urn:s")),
+        iri("urn:p"),
+        Term::Literal(Literal::string("nested")),
+    ));
+    assert_eq!(
+        Term::try_from(GeneralizedTerm::from(standard.clone())).unwrap(),
+        standard
+    );
+    let invalid: GeneralizedTriple = GeneralizedTriple::new(
+        GeneralizedTerm::Literal(Literal::string("invalid subject")),
+        GeneralizedTerm::Iri(iri("urn:p")),
+        GeneralizedTerm::Iri(iri("urn:o")),
+    );
+    let outer = GeneralizedTriple::new(
+        GeneralizedTerm::Iri(iri("urn:s")),
+        GeneralizedTerm::Iri(iri("urn:p")),
+        GeneralizedTerm::Triple(Box::new(invalid.clone())),
+    );
+    assert_eq!(Triple::try_from(outer), Err(ModelError::InvalidSubject));
+    assert_eq!(
+        GraphName::try_from(GeneralizedGraphName::Term(GeneralizedTerm::Triple(
+            Box::new(invalid)
+        ))),
+        Err(ModelError::InvalidGraphName)
+    );
+}
+
+#[test]
+fn explicit_extensions_round_trip_without_requiring_clone() {
+    #[derive(Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+    struct Extra(u8);
+    let standard = Quad::new(
+        Triple::new(
+            Subject::Extension(Extra(1)),
+            iri("urn:p"),
+            Term::Extension(Extra(2)),
+        ),
+        GraphName::Extension(Extra(3)),
+    );
+    let expected = serde_json::to_string(&standard).unwrap();
+    let generalized = GeneralizedQuad::from(standard);
+    let restored: Quad<String, Extra> = generalized.try_into().unwrap();
+    assert_eq!(serde_json::to_string(&restored).unwrap(), expected);
+}
