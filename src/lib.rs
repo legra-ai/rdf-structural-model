@@ -5,6 +5,7 @@ mod blank_node;
 mod borrowed;
 mod direction;
 mod error;
+mod generalized;
 mod language;
 mod literal;
 mod statement;
@@ -13,6 +14,12 @@ mod term;
 pub use blank_node::BlankNodeId;
 pub use direction::BaseDirection;
 pub use error::ModelError;
+pub use generalized::{
+    GeneralizedGraphName,
+    GeneralizedQuad,
+    GeneralizedTerm,
+    GeneralizedTriple,
+};
 pub use language::LanguageTag;
 pub use literal::{
     Literal,
