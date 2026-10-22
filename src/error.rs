@@ -15,4 +15,10 @@ pub enum ModelError {
     /// A literal or triple term cannot occupy a standard subject position.
     #[error("term cannot occupy an RDF 1.2 subject position")]
     InvalidSubject,
+    /// Only an IRI can occupy a standard predicate position.
+    #[error("term cannot occupy an RDF 1.2 predicate position")]
+    InvalidPredicate,
+    /// A literal or triple term cannot name a standard RDF graph.
+    #[error("term cannot occupy an RDF 1.2 graph-name position")]
+    InvalidGraphName,
 }

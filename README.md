@@ -71,12 +71,46 @@ standard-profile decoder rejects additional term payloads. Applications can opt
 into a typed extension enum for binary literals, referenced payloads or additional
 subject/graph forms. There is no JSON value or string fallback. Applications
 remain responsible for extension semantics and backend capability validation.
-Predicates remain IRIs; this crate does not claim a generalized RDF engine.
+Standard predicates remain IRIs. Generalized values use the separate types below;
+this crate provides no reasoning or storage engine.
 
 Extended metadata is separate from standard lexical literal validation. This
 allows a backend to expose metadata without loading bytes, or to carry a typed
 binary payload without pretending it is an RDF string. Private storage IDs,
 encryption and resolution capabilities belong in caller-owned types and adapters.
+
+## Explicit generalized statements
+
+`GeneralizedTerm`, `GeneralizedTriple`, `GeneralizedGraphName` and
+`GeneralizedQuad` model the explicit, non-standard generalization in
+[RDF 1.2 Concepts §7.2](https://www.w3.org/TR/2026/CR-rdf12-concepts-20260407/#section-generalized-rdf).
+Every triple position and named graph position can hold an IRI, scoped blank
+node, exact literal or recursively generalized triple term. The default graph
+is a separate variant. Typed application extensions remain explicit.
+
+Use these values for generalized reasoning intermediates, including literal
+subjects, without representing literals as invented IRIs or private extensions.
+They reuse the same checked literal, IRI and blank-node types. JSON and Postcard
+support owned and borrowed decoding; `as_ref()` borrows lexical and extension
+payloads and allocates only nested structural boxes.
+
+`From` converts standard values into the generalized domain without cloning.
+`TryFrom` converts back and rejects invalid standard subject, predicate and graph
+positions, including invalid nested triple terms. Conversion never drops a
+statement or normalizes its lexical forms. Existing `Term`, `Triple`,
+`GraphName` and `Quad` keep their standard RDF position contracts.
+
+```rust
+use iri_rfc3987::Iri;
+use rdf_structural_model::{GeneralizedTerm, GeneralizedTriple, Literal, Triple};
+
+let statement: GeneralizedTriple = GeneralizedTriple::new(
+    GeneralizedTerm::Literal(Literal::string("literal subject")),
+    GeneralizedTerm::Iri(Iri::parse("urn:predicate").unwrap().into()),
+    GeneralizedTerm::Literal(Literal::string("object")),
+);
+assert!(Triple::try_from(statement).is_err());
+```
 
 ## Memory and maintenance
 

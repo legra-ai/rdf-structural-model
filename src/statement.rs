@@ -40,6 +40,11 @@ impl<Text: Bos<str> + AsRef<str>, Extension> Triple<Text, Extension> {
             object,
         }
     }
+    /// Consume the triple without cloning any operand.
+    #[must_use]
+    pub fn into_parts(self) -> (Subject<Text, Extension>, Iri<Text>, Term<Text, Extension>) {
+        (self.subject, self.predicate, self.object)
+    }
     /// The subject.
     #[must_use]
     pub const fn subject(&self) -> &Subject<Text, Extension> {
@@ -96,6 +101,11 @@ impl<Text: Bos<str> + AsRef<str>, Extension> Quad<Text, Extension> {
     #[must_use]
     pub const fn new(triple: Triple<Text, Extension>, graph: GraphName<Text, Extension>) -> Self {
         Self { triple, graph }
+    }
+    /// Consume the quad without cloning its triple or graph name.
+    #[must_use]
+    pub fn into_parts(self) -> (Triple<Text, Extension>, GraphName<Text, Extension>) {
+        (self.triple, self.graph)
     }
     /// The triple in this graph.
     #[must_use]
