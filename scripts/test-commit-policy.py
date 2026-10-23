@@ -33,6 +33,15 @@ class ReleaseCredentialTests(unittest.TestCase):
 
 
 class CommitPolicyTests(unittest.TestCase):
+    def test_hook_installer_declares_the_owning_checkout(self):
+        root = Path(__file__).resolve().parents[1]
+        build = (root / "build.rs").read_text()
+        self.assertIn(
+            '.install_from_build_script(env!("CARGO_MANIFEST_DIR"))',
+            build,
+            "Dependency builds must not infer ownership from their caller's Git checkout",
+        )
+
     def test_ci_keeps_warnings_fatal_with_pinned_rust(self):
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github/workflows/ci.yml").read_text()
