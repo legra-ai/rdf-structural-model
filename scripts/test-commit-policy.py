@@ -111,6 +111,12 @@ class MajorReleasePolicyTests(unittest.TestCase):
 
 
 class PreproductionVersionPolicyTests(unittest.TestCase):
+    def test_release_planning_and_preparation_use_the_same_revision(self):
+        workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/ci.yml").read_text()
+        revisions = re.findall(r"prepare-cargo-release@([0-9a-f]{40})", workflow)
+        self.assertEqual(len(revisions), 2)
+        self.assertEqual(len(set(revisions)), 1, "Plan and prepare must execute the same release implementation")
+
     def test_both_planning_and_preparation_select_minor_for_breaking_changes(self):
         workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/ci.yml").read_text()
         steps = re.split(r"^      - ", workflow, flags=re.MULTILINE)
