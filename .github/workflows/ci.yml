@@ -105,7 +105,7 @@ jobs:
           target_commitish: ${{ needs.prepare.outputs.revision }}
           body_path: CHANGELOG_RELEASE.md
           draft: true
-      - uses: legra-ai/github-actions/.github/actions/publish-tested-crate@0d8d26076087886d4741bafd9c34d4066df34075
+      - uses: legra-ai/github-actions/.github/actions/publish-tested-crate@12819667e09f7500e43c24eb3a6824b46591649f
         with:
           crate: rdf-structural-model
           version: ${{ needs.prepare.outputs.version }}
