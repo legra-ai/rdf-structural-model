@@ -14,9 +14,56 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      major: ${{ steps.release.outputs.major-approval-required }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+        id: release
+        with:
+          breaking-change-bump: minor
+          token: ${{ github.token }}
+          plan-only: 'true'
+      - name: Show release proposal
+        env:
+          PROPOSED_VERSION: ${{ steps.release.outputs.version }}
+          MAJOR_REQUIRED: ${{ steps.release.outputs.major-approval-required }}
+          WORKFLOW_SOURCE: ${{ github.sha }}
+        run: |
+          python3 - <<'SUMMARY'
+          import os
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f"Proposed version: {os.environ['PROPOSED_VERSION']}\n\n")
+              if os.environ['MAJOR_REQUIRED'] == 'true':
+                  summary.write("Major release requires your explicit environment review. "
+                                "Use this exact approval comment:\n\n")
+                  summary.write(f"Approve major release {os.environ['PROPOSED_VERSION']} "
+                                f"from {os.environ['WORKFLOW_SOURCE']}\n")
+          SUMMARY
+
+  approve-major:
+    name: Approve major release ${{ needs.plan.outputs.version }}
+    needs: plan
+    if: needs.plan.outputs.major == 'true'
+    runs-on: ubuntu-latest
+    environment: major-release
+    steps:
+      - name: Continue after the explicit environment review
+        run: python3 -c 'print("Environment review completed; preparation will verify the exact approval.")'
+
   prepare:
+    needs: [plan, approve-major]
+    if: >-
+      always() && !cancelled() && needs.plan.result == 'success' &&
+      (needs['approve-major'].result == 'success' || needs['approve-major'].result == 'skipped')
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.release.outputs.revision }}
@@ -39,12 +86,14 @@ jobs:
       - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
         id: release
         with:
+          breaking-change-bump: minor
           # Non-main preparation is read-only. A missing writer token on main
           # must remain an error, so select the non-main token first.
           token: ${{ github.ref != 'refs/heads/main' && github.token || steps.writer.outputs.token }}
 
   test:
     needs: prepare
+    if: always() && !cancelled() && needs.prepare.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -78,7 +127,9 @@ jobs:
       - run: cargo doc --no-deps --all-features
 
   publish:
-    if: needs.prepare.outputs.release == 'true'
+    if: >-
+      always() && !cancelled() && needs.prepare.outputs.release == 'true' &&
+      needs.prepare.result == 'success' && needs.test.result == 'success'
     needs: [prepare, test]
     runs-on: ubuntu-latest
     permissions:
