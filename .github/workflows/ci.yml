@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+      - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@5c494a21a1df770e526e069ddf0dac0c0797e374
         id: release
         with:
           breaking-change-bump: minor
@@ -83,7 +83,7 @@ jobs:
           private-key: ${{ secrets.RELEASE_WRITER_APP_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
-      - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+      - uses: legra-ai/github-actions/.github/actions/prepare-cargo-release@5c494a21a1df770e526e069ddf0dac0c0797e374
         id: release
         with:
           breaking-change-bump: minor
@@ -143,11 +143,11 @@ jobs:
         with:
           toolchain: 1.99.1
           rustflags: -D warnings
-      - uses: legra-ai/github-actions/.github/actions/tag-tested-release@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+      - uses: legra-ai/github-actions/.github/actions/tag-tested-release@5c494a21a1df770e526e069ddf0dac0c0797e374
         with:
           version: ${{ needs.prepare.outputs.version }}
           revision: ${{ needs.prepare.outputs.revision }}
-      - uses: legra-ai/github-actions/.github/actions/generate-changelog@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+      - uses: legra-ai/github-actions/.github/actions/generate-changelog@5c494a21a1df770e526e069ddf0dac0c0797e374
         with:
           revision: ${{ needs.prepare.outputs.revision }}
           output-file: CHANGELOG_RELEASE.md
@@ -157,7 +157,7 @@ jobs:
           target_commitish: ${{ needs.prepare.outputs.revision }}
           body_path: CHANGELOG_RELEASE.md
           draft: true
-      - uses: legra-ai/github-actions/.github/actions/publish-tested-crate@29a776a46cbaf52a403f6f347d994bc9bd17c1f9
+      - uses: legra-ai/github-actions/.github/actions/publish-tested-crate@5c494a21a1df770e526e069ddf0dac0c0797e374
         with:
           crate: rdf-structural-model
           version: ${{ needs.prepare.outputs.version }}
