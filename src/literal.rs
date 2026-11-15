@@ -73,7 +73,20 @@ impl<Text: Bos<str> + AsRef<str>> LiteralMetadata<Text> {
         &self.facets
     }
 
-    fn validate_standard(&self) -> Result<(), ModelError> {
+    /// Check the datatype/facet pairing for a standard RDF 1.2 literal.
+    ///
+    /// This is the same structural check used by [`Literal::try_new`], without
+    /// reading or constructing a lexical payload. It neither recognizes
+    /// datatypes nor evaluates their lexical or value spaces. Unknown datatype
+    /// IRIs are permitted without language/direction facets.
+    ///
+    /// Metadata construction and deserialization remain permissive for
+    /// explicitly extended literals; this check is an opt-in standard boundary.
+    ///
+    /// # Errors
+    /// Returns [`ModelError::InconsistentLiteralFacets`] when the datatype and
+    /// language/direction facets do not agree.
+    pub fn validate_standard(&self) -> Result<(), ModelError> {
         let valid = match &self.facets {
             LiteralFacets::None => {
                 self.datatype.as_str() != RDF_LANG_STRING

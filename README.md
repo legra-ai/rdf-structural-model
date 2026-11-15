@@ -64,6 +64,12 @@ let borrowed: Literal<&str> = serde_json::from_str(&encoded).unwrap();
 assert_eq!(borrowed, owned.as_ref());
 ```
 
+Metadata-only adapters can call `LiteralMetadata::validate_standard()` before
+reading lexical payloads. This checks the same datatype/facet pairing as
+`Literal::try_new`; it does not recognize datatypes or evaluate lexical values.
+Extended metadata remains representable until a caller explicitly requests this
+standard-profile check.
+
 ## Explicit extensions
 
 The extension parameter defaults to the uninhabited `NoExtension` type. A
