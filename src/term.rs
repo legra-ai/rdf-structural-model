@@ -14,7 +14,9 @@ use crate::{
 ///
 /// Deserialization rejects any extension payload. An application must choose a
 /// concrete extension type to opt into additional term semantics.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub enum NoExtension {}
 
 /// An RDF term with owned or borrowed text and an explicit extension parameter.

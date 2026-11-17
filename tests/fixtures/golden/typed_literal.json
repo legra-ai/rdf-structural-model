@@ -1,0 +1,9 @@
+{
+  "Literal": {
+    "lexical": "005",
+    "metadata": {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "facets": "None"
+    }
+  }
+}

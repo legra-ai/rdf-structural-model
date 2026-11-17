@@ -1,0 +1,12 @@
+{
+  "triple": {
+    "subject": {
+      "Iri": "urn:s"
+    },
+    "predicate": "urn:p",
+    "object": {
+      "Iri": "urn:o"
+    }
+  },
+  "graph": "Default"
+}

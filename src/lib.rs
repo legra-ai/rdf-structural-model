@@ -10,6 +10,7 @@ mod generalized;
 mod language;
 mod literal;
 mod nesting;
+mod order;
 mod statement;
 mod term;
 
@@ -22,7 +23,12 @@ pub use generalized::{
     GeneralizedTerm,
     GeneralizedTriple,
 };
-pub use language::LanguageTag;
+pub use language::{
+    LanguageTag,
+    LanguageTagError,
+    LanguageTagErrorReason,
+    SubtagIndex,
+};
 pub use literal::{
     Literal,
     LiteralFacets,

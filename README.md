@@ -19,8 +19,13 @@ It is a structural model, not a parser, graph store, reasoner or conformance cla
 - `Literal` preserves the lexical form, datatype and language/direction metadata.
   `"005"^^xsd:integer` and `"5"^^xsd:integer` are different terms. Datatype value
   comparison and ill-typed lexical-form detection belong in semantic evaluators.
-- `LanguageTag` checks BCP 47 syntax, including duplicate variants and extension
-  singletons. Equality and hashing ignore ASCII case; original spelling survives
+- `LanguageTag` checks RFC 5646 well-formedness, including duplicate variants and
+  extension singletons; every subtag, private-use ones included, is 1-8 ASCII
+  alphanumerics. Rejections are `ModelError::InvalidLanguageTag(LanguageTagError)`,
+  carrying a `LanguageTagErrorReason` and the failing `SubtagIndex`. `primary()`,
+  `script()`, `region()` and `variants()` return subtags in their original
+  spelling; private-use and irregular grandfathered tags have no language parts.
+  Equality, hashing and ordering ignore ASCII case; original spelling survives
   serialization. Tags need not be registered in the IANA database.
 - `LiteralMetadata` and `LiteralFacets` carry no payload or storage address.
   Metadata can describe extended literals whose language is independent of the
@@ -41,6 +46,26 @@ let borrowed = quad.as_ref();
 assert!(matches!(borrowed.graph(), GraphName::Default));
 ```
 
+## Order
+
+`Term`, `Subject`, `Literal`, `Triple`, `GraphName` and `Quad`, owned and
+borrowed alike, implement one total order that agrees with `Eq` and `Hash`:
+
+1. Position kind first, in declaration order: terms order IRI, blank node,
+   literal, triple term, extension; subjects IRI, blank node, extension; graph
+   names default graph, IRI, blank node, extension.
+2. IRIs by their exact text.
+3. Blank nodes by scope IRI, then label.
+4. Literals by lexical form, then datatype IRI, then facets: none before a
+   language before a language with direction; languages compare ASCII
+   case-insensitively, so `en-US` and `EN-us` are equal; then direction, `ltr`
+   before `rtl`.
+5. Triples by subject, predicate, then object; quads by their triple, then
+   graph name.
+
+The order is structural, for sorting and deduplication. It is not SPARQL
+`ORDER BY` and never compares datatype values.
+
 ## Ownership and serialization
 
 The text parameter defaults to `String`; `&str` provides borrowed values with
@@ -56,7 +81,9 @@ unknown fields and unsupported extension payloads. Decoding `Term`, `Triple`,
 deeper than `MAX_TRIPLE_TERM_DEPTH` (32 enclosing triple terms) fail with
 `ModelError::NestingTooDeep` instead of exhausting the stack, in every format,
 including Postcard, which has no recursion limit of its own. Tests exercise both JSON and
-Postcard, including borrowed decoding into input buffers. Neither encoding is
+Postcard, including borrowed decoding into input buffers, property round-trips of
+arbitrary nested terms and exact golden vectors in `tests/fixtures/golden/`
+(regenerated only with `UPDATE_GOLDEN=1`). Neither encoding is
 an RDF concrete syntax, a canonical hash preimage or a promised stable protocol.
 
 ```rust
