@@ -1,5 +1,7 @@
 //! Structural errors independent of an RDF backend.
 
+use crate::NestingDepth;
+
 /// A rejected RDF structural value.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ModelError {
@@ -21,4 +23,12 @@ pub enum ModelError {
     /// A literal or triple term cannot name a standard RDF graph.
     #[error("term cannot occupy an RDF 1.2 graph-name position")]
     InvalidGraphName,
+    /// Triple terms nest deeper than [`crate::MAX_TRIPLE_TERM_DEPTH`].
+    #[error("triple-term nesting depth {depth} exceeds the limit of {limit}")]
+    NestingTooDeep {
+        /// The enforced limit.
+        limit: NestingDepth,
+        /// The depth reached when decoding or conversion stopped.
+        depth: NestingDepth,
+    },
 }

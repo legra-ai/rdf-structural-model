@@ -51,7 +51,11 @@ strings from its input; escaped JSON strings may require an owned value instead.
 
 All semantic types implement Serde directly. Checked deserialization rejects
 invalid tags, empty blank-node identities, inconsistent standard literal facets,
-unknown fields and unsupported extension payloads. Tests exercise both JSON and
+unknown fields and unsupported extension payloads. Decoding `Term`, `Triple`,
+`GeneralizedTerm` and `GeneralizedTriple` is depth-checked: triple terms nested
+deeper than `MAX_TRIPLE_TERM_DEPTH` (32 enclosing triple terms) fail with
+`ModelError::NestingTooDeep` instead of exhausting the stack, in every format,
+including Postcard, which has no recursion limit of its own. Tests exercise both JSON and
 Postcard, including borrowed decoding into input buffers. Neither encoding is
 an RDF concrete syntax, a canonical hash preimage or a promised stable protocol.
 
@@ -102,7 +106,8 @@ payloads and allocates only nested structural boxes.
 
 `From` converts standard values into the generalized domain without cloning.
 `TryFrom` converts back and rejects invalid standard subject, predicate and graph
-positions, including invalid nested triple terms. Conversion never drops a
+positions, including invalid nested triple terms, and applies the same
+`MAX_TRIPLE_TERM_DEPTH` as decoding. Conversion never drops a
 statement or normalizes its lexical forms. Existing `Term`, `Triple`,
 `GraphName` and `Quad` keep their standard RDF position contracts.
 

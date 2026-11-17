@@ -10,6 +10,7 @@ use super::{
 use crate::{
     GraphName,
     ModelError,
+    NestingDepth,
     Quad,
     Subject,
     Term,
@@ -30,18 +31,32 @@ impl<Text: Bos<str> + AsRef<str>, Extension> From<Term<Text, Extension>>
     }
 }
 
+impl<Text: Bos<str> + AsRef<str>, Extension> Term<Text, Extension> {
+    /// Convert a generalized term enclosed by `depth` triple terms.
+    fn try_from_generalized_at(
+        value: GeneralizedTerm<Text, Extension>,
+        depth: NestingDepth,
+    ) -> Result<Self, ModelError> {
+        Ok(match value {
+            GeneralizedTerm::Iri(iri) => Self::Iri(iri),
+            GeneralizedTerm::BlankNode(blank) => Self::BlankNode(blank),
+            GeneralizedTerm::Literal(literal) => Self::Literal(literal),
+            GeneralizedTerm::Triple(triple) => {
+                Self::triple(Triple::try_from_generalized_at(*triple, depth.descend()?)?)
+            }
+            GeneralizedTerm::Extension(extension) => Self::Extension(extension),
+        })
+    }
+}
+
+/// Rejects invalid standard positions and triple terms nested deeper than
+/// [`crate::MAX_TRIPLE_TERM_DEPTH`].
 impl<Text: Bos<str> + AsRef<str>, Extension> TryFrom<GeneralizedTerm<Text, Extension>>
     for Term<Text, Extension>
 {
     type Error = ModelError;
     fn try_from(value: GeneralizedTerm<Text, Extension>) -> Result<Self, Self::Error> {
-        Ok(match value {
-            GeneralizedTerm::Iri(iri) => Self::Iri(iri),
-            GeneralizedTerm::BlankNode(blank) => Self::BlankNode(blank),
-            GeneralizedTerm::Literal(literal) => Self::Literal(literal),
-            GeneralizedTerm::Triple(triple) => Self::Triple(Box::new((*triple).try_into()?)),
-            GeneralizedTerm::Extension(extension) => Self::Extension(extension),
-        })
+        Self::try_from_generalized_at(value, NestingDepth::ROOT)
     }
 }
 
@@ -59,11 +74,13 @@ impl<Text: Bos<str> + AsRef<str>, Extension> From<Triple<Text, Extension>>
     }
 }
 
-impl<Text: Bos<str> + AsRef<str>, Extension> TryFrom<GeneralizedTriple<Text, Extension>>
-    for Triple<Text, Extension>
-{
-    type Error = ModelError;
-    fn try_from(value: GeneralizedTriple<Text, Extension>) -> Result<Self, Self::Error> {
+impl<Text: Bos<str> + AsRef<str>, Extension> Triple<Text, Extension> {
+    /// Convert a generalized triple whose terms are enclosed by `depth` triple
+    /// terms.
+    fn try_from_generalized_at(
+        value: GeneralizedTriple<Text, Extension>,
+        depth: NestingDepth,
+    ) -> Result<Self, ModelError> {
         let (subject, predicate, object) = value.into_parts();
         let subject = match subject {
             GeneralizedTerm::Iri(iri) => Subject::Iri(iri),
@@ -76,7 +93,22 @@ impl<Text: Bos<str> + AsRef<str>, Extension> TryFrom<GeneralizedTriple<Text, Ext
         let GeneralizedTerm::Iri(predicate) = predicate else {
             return Err(ModelError::InvalidPredicate);
         };
-        Ok(Self::new(subject, predicate, object.try_into()?))
+        Ok(Self::new(
+            subject,
+            predicate,
+            Term::try_from_generalized_at(object, depth)?,
+        ))
+    }
+}
+
+/// Rejects invalid standard positions and triple terms nested deeper than
+/// [`crate::MAX_TRIPLE_TERM_DEPTH`].
+impl<Text: Bos<str> + AsRef<str>, Extension> TryFrom<GeneralizedTriple<Text, Extension>>
+    for Triple<Text, Extension>
+{
+    type Error = ModelError;
+    fn try_from(value: GeneralizedTriple<Text, Extension>) -> Result<Self, Self::Error> {
+        Self::try_from_generalized_at(value, NestingDepth::ROOT)
     }
 }
 

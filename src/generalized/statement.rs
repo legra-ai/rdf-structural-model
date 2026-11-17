@@ -9,13 +9,10 @@ use crate::NoExtension;
 ///
 /// This models the explicit generalization described by RDF 1.2 Concepts §7.2,
 /// not a standard RDF triple. Literal and blank-node identity remain exact.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize)]
 #[serde(
     deny_unknown_fields,
-    bound(
-        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-    )
+    bound(serialize = "Text: serde::Serialize, Extension: serde::Serialize")
 )]
 pub struct GeneralizedTriple<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     subject: GeneralizedTerm<Text, Extension>,

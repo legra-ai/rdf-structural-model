@@ -14,13 +14,10 @@ use crate::{
 /// This is an explicit non-standard RDF domain, suitable for reasoning
 /// intermediates. It does not relax the position restrictions of
 /// [`crate::Term`].
-#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize)]
 #[serde(
     deny_unknown_fields,
-    bound(
-        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-    )
+    bound(serialize = "Text: serde::Serialize, Extension: serde::Serialize")
 )]
 pub enum GeneralizedTerm<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     /// An absolute IRI.

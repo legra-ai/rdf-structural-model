@@ -3,11 +3,13 @@
 
 mod blank_node;
 mod borrowed;
+mod decode;
 mod direction;
 mod error;
 mod generalized;
 mod language;
 mod literal;
+mod nesting;
 mod statement;
 mod term;
 
@@ -28,6 +30,10 @@ pub use literal::{
     RDF_DIR_LANG_STRING,
     RDF_LANG_STRING,
     XSD_STRING,
+};
+pub use nesting::{
+    MAX_TRIPLE_TERM_DEPTH,
+    NestingDepth,
 };
 pub use statement::{
     GraphName,
