@@ -1,13 +1,16 @@
 //! Structural errors independent of an RDF backend.
 
-use crate::NestingDepth;
+use crate::{
+    LanguageTagError,
+    NestingDepth,
+};
 
 /// A rejected RDF structural value.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ModelError {
     /// A language tag is not well-formed BCP 47.
-    #[error("language tag is not well-formed BCP 47")]
-    InvalidLanguageTag,
+    #[error(transparent)]
+    InvalidLanguageTag(LanguageTagError),
     /// An abstract blank-node identifier is empty.
     #[error("blank-node identifier must not be empty")]
     EmptyBlankNode,

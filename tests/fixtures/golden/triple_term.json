@@ -1,0 +1,28 @@
+{
+  "Triple": {
+    "subject": {
+      "Iri": "urn:s"
+    },
+    "predicate": "urn:q",
+    "object": {
+      "Triple": {
+        "subject": {
+          "BlankNode": {
+            "scope": "urn:import:a",
+            "label": "b1"
+          }
+        },
+        "predicate": "urn:p",
+        "object": {
+          "Literal": {
+            "lexical": "o",
+            "metadata": {
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "facets": "None"
+            }
+          }
+        }
+      }
+    }
+  }
+}
