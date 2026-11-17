@@ -18,13 +18,10 @@ use crate::{
 pub enum NoExtension {}
 
 /// An RDF term with owned or borrowed text and an explicit extension parameter.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize)]
 #[serde(
     deny_unknown_fields,
-    bound(
-        serialize = "Text: serde::Serialize, Extension: serde::Serialize",
-        deserialize = "Text: serde::Deserialize<'de>, Iri<Text>: serde::Deserialize<'de>, Extension: serde::Deserialize<'de>"
-    )
+    bound(serialize = "Text: serde::Serialize, Extension: serde::Serialize")
 )]
 pub enum Term<Text: Bos<str> + AsRef<str> = String, Extension = NoExtension> {
     /// An absolute IRI.
