@@ -26,6 +26,14 @@ pub enum ModelError {
     /// A literal or triple term cannot name a standard RDF graph.
     #[error("term cannot occupy an RDF 1.2 graph-name position")]
     InvalidGraphName,
+    /// A reifying triple's predicate must be `rdf:reifies` (RDF 1.2 Concepts
+    /// §1.5).
+    #[error("reifying triple predicate must be rdf:reifies")]
+    NotReifyingPredicate,
+    /// A reifying triple's object must be a triple term (RDF 1.2 Concepts
+    /// §1.5).
+    #[error("reifying triple object must be a triple term")]
+    ReifiedObjectNotTripleTerm,
     /// Triple terms nest deeper than [`crate::MAX_TRIPLE_TERM_DEPTH`].
     #[error("triple-term nesting depth {depth} exceeds the limit of {limit}")]
     NestingTooDeep {

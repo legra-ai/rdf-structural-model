@@ -32,6 +32,7 @@ struct LiteralInput {
     metadata: LiteralMetadata,
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn invalid_language_tags_are_rejected_in_text_and_binary() {
     for tag in ["", "en--US", "de-1901-1901", "en-a-abc-A-def"] {
@@ -39,6 +40,7 @@ fn invalid_language_tags_are_rejected_in_text_and_binary() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.5 Blank Nodes.
 #[test]
 fn empty_blank_node_labels_are_rejected_in_text_and_binary() {
     rejected::<BlankNodeId, _>(&BlankInput {
@@ -47,6 +49,7 @@ fn empty_blank_node_labels_are_rejected_in_text_and_binary() {
     });
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn language_datatypes_require_matching_facets_on_construction_and_decoding() {
     for datatype in [RDF_LANG_STRING, RDF_DIR_LANG_STRING] {
@@ -68,6 +71,7 @@ fn language_datatypes_require_matching_facets_on_construction_and_decoding() {
     });
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals, §3.6 Triple Terms.
 #[test]
 fn nested_malformed_language_and_unknown_fields_are_rejected() {
     let malformed = r#"{"lexical":"text","metadata":{"datatype":"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString","facets":{"Language":"en--US"}}}"#;

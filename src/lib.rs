@@ -11,8 +11,10 @@ mod language;
 mod literal;
 mod nesting;
 mod order;
+mod reification;
 mod statement;
 mod term;
+mod vocabulary;
 
 pub use blank_node::BlankNodeId;
 pub use direction::BaseDirection;
@@ -33,14 +35,12 @@ pub use literal::{
     Literal,
     LiteralFacets,
     LiteralMetadata,
-    RDF_DIR_LANG_STRING,
-    RDF_LANG_STRING,
-    XSD_STRING,
 };
 pub use nesting::{
     MAX_TRIPLE_TERM_DEPTH,
     NestingDepth,
 };
+pub use reification::Reification;
 pub use statement::{
     GraphName,
     Quad,
@@ -50,4 +50,11 @@ pub use term::{
     NoExtension,
     Subject,
     Term,
+};
+pub use vocabulary::{
+    RDF_DIR_LANG_STRING,
+    RDF_LANG_STRING,
+    RDF_NAMESPACE,
+    RDF_REIFIES,
+    XSD_STRING,
 };

@@ -32,6 +32,7 @@ fn hash(value: &impl Hash) -> u64 {
     state.finish()
 }
 
+/// Spec: RDF 1.2 Concepts §3.3 IRIs.
 #[test]
 fn rdf_iri_identity_does_not_apply_uri_normalization() {
     for (first, second) in [
@@ -51,6 +52,7 @@ fn rdf_iri_identity_does_not_apply_uri_normalization() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn extension_payloads_and_private_use_subtags_are_not_duplicate_variants() {
     for text in [
@@ -78,6 +80,7 @@ struct LiteralInput {
     metadata: LiteralMetadata,
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn every_standard_datatype_facet_combination_is_checked_in_both_formats() {
     for datatype in ["urn:custom", RDF_LANG_STRING, RDF_DIR_LANG_STRING] {
@@ -112,6 +115,7 @@ fn every_standard_datatype_facet_combination_is_checked_in_both_formats() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals, §3.5 Blank Nodes, §3.6 Triple Terms.
 #[test]
 fn nested_round_trips_preserve_scope_lexical_form_and_language_spelling() {
     let literal = Literal::directional(

@@ -51,6 +51,7 @@ fn assert_sorting_is_canonical<T: Ord + Clone + std::fmt::Debug>(mut values: Vec
 }
 
 proptest! {
+    /// Spec: RDF 1.2 Concepts §3.7 Graph Comparison.
     #[test]
     fn term_order_is_total_and_consistent(
         a in strategy::term(), b in strategy::term(), c in strategy::term()
@@ -61,6 +62,7 @@ proptest! {
         prop_assert_eq!(a.cmp(&b), ra.cmp(&rb));
     }
 
+    /// Spec: RDF 1.2 Concepts §4.3 Quads.
     #[test]
     fn quad_order_is_total_and_consistent(
         a in strategy::quad(), b in strategy::quad(), c in strategy::quad()
@@ -74,6 +76,7 @@ proptest! {
         prop_assert_eq!(a.cmp(&b), ra.cmp(&rb));
     }
 
+    /// Spec: RDF 1.2 Concepts §3.7 Graph Comparison.
     #[test]
     fn sorting_is_independent_of_input_order(
         terms in prop::collection::vec(strategy::term(), 0..24),
@@ -91,6 +94,7 @@ fn tag(value: &str) -> LanguageTag {
     LanguageTag::try_new(value.to_owned()).unwrap()
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn documented_order_of_kinds_and_components() {
     let blank = |scope: &str, label: &str| {

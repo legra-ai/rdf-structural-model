@@ -13,6 +13,7 @@ fn rejection(text: &str) -> (Reason, usize) {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn rejections_name_the_reason_and_subtag() {
     // bounded: one case per rejection reason.
@@ -39,6 +40,7 @@ fn rejections_name_the_reason_and_subtag() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn private_use_subtags_are_one_to_eight_alphanumerics() {
     // RFC 5646 §2.1: privateuse = "x" 1*("-" (1*8alphanum)).
@@ -49,12 +51,14 @@ fn private_use_subtags_are_one_to_eight_alphanumerics() {
     assert_eq!(rejection("en-x-ab-abcdefghi"), (Reason::SubtagTooLong, 3));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn extension_subtags_are_two_to_eight_alphanumerics() {
     assert!(LanguageTag::try_new("en-a-bb-12345678").is_ok());
     assert_eq!(rejection("en-a-bb-123456789"), (Reason::SubtagTooLong, 3));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn accessors_return_original_spelling() {
     let tag = LanguageTag::try_new("zh-yue-Hant-HK-1996-fonipa-u-co-x-priv").unwrap();
@@ -71,6 +75,7 @@ fn accessors_return_original_spelling() {
     assert_eq!(numeric.variants().count(), 0);
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn private_use_and_irregular_tags_have_no_language_parts() {
     for text in ["x-whatever", "i-klingon", "EN-gb-OED", "sgn-BE-FR"] {
@@ -85,6 +90,7 @@ fn private_use_and_irregular_tags_have_no_language_parts() {
     assert_eq!(regular.primary(), Some("zh"));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn error_message_names_reason_and_position() {
     let error = LanguageTag::try_new("en-US-ab").unwrap_err();

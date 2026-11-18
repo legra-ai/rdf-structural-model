@@ -3,6 +3,7 @@
 use iri_rfc3987::Iri;
 use rdf_structural_model::Literal;
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn literal_datatype_exposes_its_retained_iri_capacity() {
     let mut text = String::with_capacity(4096);

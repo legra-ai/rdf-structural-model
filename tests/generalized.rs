@@ -23,6 +23,7 @@ fn blank(scope: &str) -> GeneralizedTerm {
     GeneralizedTerm::BlankNode(BlankNodeId::try_new(iri(scope), "b0".to_owned()).unwrap())
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn literal_subjects_and_scoped_predicates_remain_exact_generalized_terms() {
     let lexical: GeneralizedTerm = GeneralizedTerm::Literal(
@@ -35,6 +36,7 @@ fn literal_subjects_and_scoped_predicates_remain_exact_generalized_terms() {
     assert_eq!(Triple::try_from(triple), Err(ModelError::InvalidSubject));
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF, §4.3 Quads.
 #[test]
 fn conversions_validate_positions_and_preserve_standard_quad_identity() {
     let triple: Triple = Triple::new(
@@ -63,6 +65,7 @@ fn conversions_validate_positions_and_preserve_standard_quad_identity() {
     );
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn generalized_values_round_trip_owned_and_borrowed_in_json_and_postcard() {
     let triple: GeneralizedTriple = GeneralizedTriple::new(
@@ -95,6 +98,7 @@ fn generalized_values_round_trip_owned_and_borrowed_in_json_and_postcard() {
     assert!(serde_json::from_str::<GeneralizedQuad>(&with_unknown).is_err());
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF, §3.6 Triple Terms.
 #[test]
 fn nested_and_explicit_extension_terms_keep_their_own_identity() {
     #[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -120,6 +124,7 @@ fn nested_and_explicit_extension_terms_keep_their_own_identity() {
     assert_eq!(Triple::try_from(value), Err(ModelError::InvalidSubject));
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn generalized_nesting_and_literal_graph_names_round_trip_and_reject_standard_projection() {
     let inner: GeneralizedTriple = GeneralizedTriple::new(
@@ -156,6 +161,7 @@ fn generalized_nesting_and_literal_graph_names_round_trip_and_reject_standard_pr
     assert_eq!(Quad::try_from(bad_graph), Err(ModelError::InvalidGraphName));
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF, §3.1 Triples.
 #[test]
 fn nested_object_conversion_recursively_checks_standard_positions() {
     let standard: Term = Term::triple(Triple::new(
@@ -186,6 +192,7 @@ fn nested_object_conversion_recursively_checks_standard_positions() {
     );
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn explicit_extensions_round_trip_without_requiring_clone() {
     #[derive(Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -202,4 +209,24 @@ fn explicit_extensions_round_trip_without_requiring_clone() {
     let generalized = GeneralizedQuad::from(standard);
     let restored: Quad<String, Extra> = generalized.try_into().unwrap();
     assert_eq!(serde_json::to_string(&restored).unwrap(), expected);
+}
+
+/// Spec: RDF 1.2 Concepts §7.1 Symmetric RDF.
+#[test]
+fn symmetric_triples_are_generalized_values_refused_by_standard_triples() {
+    let quoted = GeneralizedTerm::Triple(Box::new(GeneralizedTriple::new(
+        GeneralizedTerm::Iri(iri("urn:s")),
+        GeneralizedTerm::Iri(iri("urn:p")),
+        GeneralizedTerm::Iri(iri("urn:o")),
+    )));
+    let predicate = GeneralizedTerm::Iri(iri("urn:q"));
+    for subject in [quoted, GeneralizedTerm::Literal(Literal::string("s"))] {
+        let symmetric = GeneralizedTriple::new(subject, predicate.clone(), blank("urn:x"));
+        let json = serde_json::to_string(&symmetric).unwrap();
+        assert_eq!(
+            serde_json::from_str::<GeneralizedTriple>(&json).unwrap(),
+            symmetric
+        );
+        assert_eq!(Triple::try_from(symmetric), Err(ModelError::InvalidSubject));
+    }
 }

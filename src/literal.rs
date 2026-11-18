@@ -3,18 +3,16 @@
 use borrow_or_share::Bos;
 use iri_rfc3987::Iri;
 
+use crate::vocabulary::{
+    RDF_DIR_LANG_STRING,
+    RDF_LANG_STRING,
+    XSD_STRING,
+};
 use crate::{
     BaseDirection,
     LanguageTag,
     ModelError,
 };
-
-/// The RDF language-string datatype IRI.
-pub const RDF_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
-/// The RDF directional language-string datatype IRI.
-pub const RDF_DIR_LANG_STRING: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#dirLangString";
-/// The XML Schema string datatype IRI.
-pub const XSD_STRING: &str = "http://www.w3.org/2001/XMLSchema#string";
 
 /// Language and direction without imposing a storage representation.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]

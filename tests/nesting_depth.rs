@@ -85,6 +85,7 @@ fn assert_too_deep_json(message: &str) {
     assert!(message.contains("nesting depth"), "{message}");
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn hostile_json_triple_terms_are_rejected_with_a_typed_error() {
     let payload = json_layer(standard_level()).nest(HOSTILE_DEPTH);
@@ -92,12 +93,14 @@ fn hostile_json_triple_terms_are_rejected_with_a_typed_error() {
     assert_too_deep_json(&error.to_string());
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn hostile_postcard_triple_terms_are_rejected() {
     let payload = postcard_layer(standard_level()).nest(HOSTILE_DEPTH);
     assert!(postcard::from_bytes::<Term>(&payload).is_err());
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn hostile_json_generalized_terms_are_rejected_with_a_typed_error() {
     let payload = json_layer(generalized_level()).nest(HOSTILE_DEPTH);
@@ -105,6 +108,7 @@ fn hostile_json_generalized_terms_are_rejected_with_a_typed_error() {
     assert_too_deep_json(&error.to_string());
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF.
 #[test]
 fn hostile_postcard_generalized_terms_are_rejected() {
     let payload = postcard_layer(generalized_level()).nest(HOSTILE_DEPTH);
@@ -122,6 +126,7 @@ fn too_deep() -> ModelError {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn the_limit_itself_decodes_and_one_more_level_is_rejected_in_json() {
     let standard = json_layer(standard_level());
@@ -145,6 +150,7 @@ fn the_limit_itself_decodes_and_one_more_level_is_rejected_in_json() {
     assert!(serde_json::from_slice::<GeneralizedTerm>(&generalized.nest(limit() + 1)).is_err());
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn the_limit_itself_decodes_and_one_more_level_is_rejected_in_postcard() {
     let standard = postcard_layer(standard_level());
@@ -164,6 +170,7 @@ fn the_limit_itself_decodes_and_one_more_level_is_rejected_in_postcard() {
     assert!(postcard::from_bytes::<GeneralizedTerm>(&generalized.nest(limit() + 1)).is_err());
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn borrowed_terms_at_the_limit_decode_from_the_input_buffer() {
     let payload = json_layer(standard_level()).nest(limit());
@@ -181,6 +188,7 @@ fn generalized_nested(depth: usize) -> GeneralizedTerm {
     })
 }
 
+/// Spec: RDF 1.2 Concepts §7.2 Generalized RDF, §3.6 Triple Terms.
 #[test]
 fn generalized_to_standard_conversion_applies_the_same_limit() {
     assert!(Term::try_from(generalized_nested(limit())).is_ok());

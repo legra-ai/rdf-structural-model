@@ -1,0 +1,26 @@
+{
+  "subject": {
+    "BlankNode": {
+      "scope": "urn:import:a",
+      "label": "r"
+    }
+  },
+  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies",
+  "object": {
+    "Triple": {
+      "subject": {
+        "Iri": "urn:s"
+      },
+      "predicate": "urn:p",
+      "object": {
+        "Literal": {
+          "lexical": "o",
+          "metadata": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "facets": "None"
+          }
+        }
+      }
+    }
+  }
+}

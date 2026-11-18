@@ -36,6 +36,7 @@ fn deep_term() -> impl Strategy<Value = Term> {
 }
 
 proptest! {
+    /// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
     #[test]
     fn terms_round_trip_owned_and_borrowed(term in deep_term()) {
         prop_assert!(depth(&term) <= MAX_TRIPLE_TERM_DEPTH.get());
@@ -51,6 +52,7 @@ proptest! {
         prop_assert_eq!(serde_json::to_string(&from_bytes).unwrap(), json);
     }
 
+    /// Spec: RDF 1.2 Concepts §4.3 Quads.
     #[test]
     fn quads_round_trip_owned_and_borrowed(quad in strategy::quad()) {
         let json = serde_json::to_string(&quad).unwrap();
@@ -66,6 +68,7 @@ proptest! {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn a_term_at_exactly_the_limit_round_trips() {
     let term = (0..MAX_TRIPLE_TERM_DEPTH.get()).fold(
