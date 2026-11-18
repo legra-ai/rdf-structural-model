@@ -12,6 +12,8 @@ use rdf_structural_model::{
     LanguageTag,
     Literal,
     Quad,
+    RDF_REIFIES,
+    Reification,
     Subject,
     Term,
     Triple,
@@ -47,39 +49,46 @@ fn assert_golden<T: Serialize + DeserializeOwned + PartialEq + Debug>(name: &str
     assert_eq!(&postcard::from_bytes::<T>(&expected_binary).unwrap(), value);
 }
 
+/// Spec: RDF 1.2 Concepts §3.3 IRIs.
 #[test]
 fn iri_term() {
     assert_golden::<Term>("iri", &Term::Iri(iri("https://example.org/é")));
 }
 
+/// Spec: RDF 1.2 Concepts §3.5 Blank Nodes.
 #[test]
 fn blank_node_term() {
     assert_golden::<Term>("blank_node", &Term::BlankNode(blank("b0")));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn string_literal_term() {
     assert_golden::<Term>("string_literal", &Term::Literal(Literal::string("Alice")));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn typed_literal_term() {
     let literal = Literal::typed("005", iri("http://www.w3.org/2001/XMLSchema#integer")).unwrap();
     assert_golden::<Term>("typed_literal", &Term::Literal(literal));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn language_literal_term() {
     let literal = Literal::language_tagged("colour", tag("en-GB"));
     assert_golden::<Term>("language_literal", &Term::Literal(literal));
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn directional_literal_term() {
     let literal = Literal::directional("مرحبا", tag("ar-EG"), BaseDirection::Rtl);
     assert_golden::<Term>("directional_literal", &Term::Literal(literal));
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn triple_term() {
     let inner = Term::triple(Triple::new(
@@ -91,6 +100,7 @@ fn triple_term() {
     assert_golden::<Term>("triple_term", &outer);
 }
 
+/// Spec: RDF 1.2 Concepts §4.3 Quads.
 #[test]
 fn quads_in_default_and_named_graphs() {
     let triple: Triple = Triple::new(
@@ -106,4 +116,19 @@ fn quads_in_default_and_named_graphs() {
         "quad_named_graph",
         &Quad::new(triple, GraphName::BlankNode(blank("g"))),
     );
+}
+
+/// Spec: RDF 1.2 Concepts §1.5 Triple Terms and Reification.
+#[test]
+fn reification_and_its_reifying_triple() {
+    let reified: Triple = Triple::new(
+        Subject::Iri(iri("urn:s")),
+        iri("urn:p"),
+        Term::Literal(Literal::string("o")),
+    );
+    let reification = Reification::new(Subject::BlankNode(blank("r")), reified);
+    let reifying: Triple = reification.clone().into();
+    assert_eq!(reifying.predicate().as_str(), RDF_REIFIES);
+    assert_golden("reification", &reification);
+    assert_golden("reifying_triple", &reifying);
 }

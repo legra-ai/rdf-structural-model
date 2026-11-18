@@ -13,6 +13,7 @@ fn iri(value: &str) -> Iri<String> {
     Iri::parse(value).unwrap().into()
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn literal_identity_preserves_lexical_form() {
     let datatype = iri("http://www.w3.org/2001/XMLSchema#integer");
@@ -22,6 +23,7 @@ fn literal_identity_preserves_lexical_form() {
     );
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn language_identity_is_case_insensitive_and_direction_sensitive() {
     let upper = Literal::language_tagged("text", LanguageTag::try_new("EN-us".to_owned()).unwrap());
@@ -41,6 +43,7 @@ fn language_identity_is_case_insensitive_and_direction_sensitive() {
     );
 }
 
+/// Spec: RDF 1.2 Concepts §3.5 Blank Nodes.
 #[test]
 fn blank_node_labels_are_scoped() {
     let a = BlankNodeId::try_new(iri("urn:source:a"), "b0".to_owned()).unwrap();
@@ -50,6 +53,7 @@ fn blank_node_labels_are_scoped() {
     let _: Term = Term::BlankNode(a);
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn well_formed_language_tags_include_private_use_and_grandfathered_forms() {
     for tag in [

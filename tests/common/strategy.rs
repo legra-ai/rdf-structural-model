@@ -101,7 +101,11 @@ pub fn quad() -> impl Strategy<Value = Quad> {
         iri().prop_map(GraphName::Iri),
         blank_node().prop_map(GraphName::BlankNode),
     ];
-    (subject(), iri(), term(), graph).prop_map(|(subject, predicate, object, graph)| {
-        Quad::new(Triple::new(subject, predicate, object), graph)
-    })
+    (triple(), graph).prop_map(|(triple, graph)| Quad::new(triple, graph))
+}
+
+/// An arbitrary standard triple, possibly with nested triple-term objects.
+pub fn triple() -> impl Strategy<Value = Triple> {
+    (subject(), iri(), term())
+        .prop_map(|(subject, predicate, object)| Triple::new(subject, predicate, object))
 }

@@ -46,6 +46,7 @@ fn round_trip<T: Serialize + DeserializeOwned + PartialEq + Debug>(value: &T) {
     assert_eq!(&postcard::from_bytes::<T>(&bytes).unwrap(), value);
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn standard_terms_and_all_literal_forms_round_trip() {
     // bounded: all non-recursive standard term forms, including all literal
@@ -62,6 +63,7 @@ fn standard_terms_and_all_literal_forms_round_trip() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms, §4.3 Quads.
 #[test]
 fn nested_triples_and_every_standard_graph_position_round_trip() {
     let nested: Triple = Triple::new(
@@ -83,6 +85,7 @@ fn nested_triples_and_every_standard_graph_position_round_trip() {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn borrowed_literals_decode_without_copying_lexical_text() {
     let expected = Literal::directional("hello", tag("en-US"), BaseDirection::Ltr);
@@ -98,6 +101,7 @@ fn borrowed_literals_decode_without_copying_lexical_text() {
     assert!(from_binary.lexical().as_ptr() < bytes.as_ptr().wrapping_add(bytes.len()));
 }
 
+/// Spec: RDF 1.2 Concepts §3.6 Triple Terms.
 #[test]
 fn borrowed_nested_terms_share_the_owned_serialization_shape() {
     let value: Term = Term::triple(Triple::new(
@@ -114,6 +118,7 @@ fn borrowed_nested_terms_share_the_owned_serialization_shape() {
     assert_eq!(serde_json::to_string(&value.as_ref()).unwrap(), json);
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn case_insensitive_tag_equality_has_matching_hashes() {
     let first = Literal::language_tagged("text", tag("EN-us"));
@@ -131,6 +136,7 @@ enum Extra {
     },
 }
 
+/// Spec: RDF 1.2 Concepts §3.1 Triples.
 #[test]
 fn typed_binary_extensions_round_trip_and_standard_decoders_reject_them() {
     // bounded: three payload bytes exercising values outside UTF-8.
@@ -149,6 +155,7 @@ fn typed_binary_extensions_round_trip_and_standard_decoders_reject_them() {
     assert!(postcard::from_bytes::<Term>(&postcard::to_allocvec(&value).unwrap()).is_err());
 }
 
+/// Spec: RDF 1.2 Concepts §3.1 Triples.
 #[test]
 fn standard_subjects_reject_literal_and_triple_term_positions() {
     assert!(

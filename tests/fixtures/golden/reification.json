@@ -1,0 +1,23 @@
+{
+  "reifier": {
+    "BlankNode": {
+      "scope": "urn:import:a",
+      "label": "r"
+    }
+  },
+  "triple": {
+    "subject": {
+      "Iri": "urn:s"
+    },
+    "predicate": "urn:p",
+    "object": {
+      "Literal": {
+        "lexical": "o",
+        "metadata": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#string",
+          "facets": "None"
+        }
+      }
+    }
+  }
+}

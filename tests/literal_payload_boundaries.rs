@@ -35,6 +35,7 @@ fn assert_round_trip(literal: &Literal) {
     assert_eq!(serde_json::to_string(&borrowed).unwrap(), json);
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn unicode_boundary_payloads_survive_owned_and_borrowed_serde_without_datatype_evaluation() {
     // bounded: sixteen scalar-boundary fixtures, each at most four UTF-8 bytes.
@@ -84,6 +85,7 @@ fn iri(text: &str) -> Iri<String> {
     Iri::parse(text).unwrap().into()
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals, §3.6 Triple Terms, §4.3 Quads.
 #[test]
 fn nested_boundary_literals_keep_their_graph_scope_and_direction_in_both_formats() {
     // bounded: four exceptional payloads across all three standard graph forms.

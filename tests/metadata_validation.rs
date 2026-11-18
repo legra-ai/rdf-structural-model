@@ -55,6 +55,7 @@ impl Serialize for TripleTermInput {
     }
 }
 
+/// Spec: RDF 1.2 Concepts §3.4 Literals.
 #[test]
 fn metadata_validation_matches_construction_and_nested_decoding_without_reading_payload() {
     // bounded: four datatype forms by four language/direction facet forms.
