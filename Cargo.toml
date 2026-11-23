@@ -15,7 +15,7 @@ include = ["Cargo.toml", "README.md", "LICENSE-APACHE", "LICENSE-MIT", "build.rs
 
 [dependencies]
 borrow-or-share = "0.2"
-iri-rfc3987 = "=0.3.5"
+iri-rfc3987 = "=0.3.7"
 serde = { version = "1", features = ["derive"] }
 thiserror = "2"
 
